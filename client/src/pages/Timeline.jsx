@@ -1,57 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MemoryCard from "../components/MemoryCard";
-import { api } from "../lib/api";
+import { MEMORIES } from "../data/memories";
 
 export default function Timeline() {
   const navigate = useNavigate();
-  const [memories, setMemories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  useEffect(() => {
-    let isMounted = true;
-
-    async function fetchMemories() {
-      setLoading(true);
-      setError("");
-
-      try {
-        const res = await api.get("/api/memories");
-        if (!isMounted) return;
-
-        const list = Array.isArray(res.data) ? res.data : [];
-
-        // Sort by memory date (oldest first). Fallback to createdAt/updatedAt.
-        const sorted = [...list].sort((a, b) => {
-          const aCandidate = a?.date || a?.createdAt || a?.updatedAt;
-          const bCandidate = b?.date || b?.createdAt || b?.updatedAt;
-
-          const aTime = aCandidate ? new Date(aCandidate).getTime() : 0;
-          const bTime = bCandidate ? new Date(bCandidate).getTime() : 0;
-
-          return (Number.isFinite(aTime) ? aTime : 0) - (Number.isFinite(bTime) ? bTime : 0);
-        });
-
-        setMemories(sorted);
-        setCurrentIndex(0);
-      } catch (err) {
-        if (!isMounted) return;
-        setError("Could not load memories. Please try again.");
-        setMemories([]);
-      } finally {
-        if (!isMounted) return;
-        setLoading(false);
-      }
-    }
-
-    fetchMemories();
-
-    return () => {
-      isMounted = false;
-    };
+  const memories = useMemo(() => {
+    // Sort by memory date (oldest first).
+    return [...MEMORIES].sort((a, b) => {
+      const aTime = a?.date ? new Date(a.date).getTime() : 0;
+      const bTime = b?.date ? new Date(b.date).getTime() : 0;
+      return (Number.isFinite(aTime) ? aTime : 0) - (Number.isFinite(bTime) ? bTime : 0);
+    });
   }, []);
+
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [memories.length]);
 
   const currentMemory = memories[currentIndex];
   const isFirst = currentIndex <= 0;
@@ -67,27 +34,11 @@ export default function Timeline() {
         </p>
       </header>
 
-      {loading ? (
-        <section className="state">
-          <p className="state__text">Loading memories…</p>
-        </section>
-      ) : error ? (
-        <section className="state state--error" role="alert">
-          <p className="state__text">{error}</p>
-          <p className="state__hint">
-            Backend:{" "}
-            <span className="mono">{api?.defaults?.baseURL || "unknown"}</span>.
-          </p>
-          <p className="state__hint">
-            If this still says <span className="mono">http://localhost:5000</span>, restart the
-            frontend after setting <span className="mono">VITE_API_BASE_URL</span>.
-          </p>
-        </section>
-      ) : memories.length === 0 ? (
+      {memories.length === 0 ? (
         <section className="state">
           <p className="state__text">No memories yet.</p>
           <p className="state__hint">
-            Add one from Postman first, then refresh this page.
+            Add memories in <span className="mono">client/src/data/memories.js</span>.
           </p>
         </section>
       ) : (
