@@ -75,8 +75,12 @@ export default function Timeline() {
         <section className="state state--error" role="alert">
           <p className="state__text">{error}</p>
           <p className="state__hint">
-            Make sure the backend is running at{" "}
-            <span className="mono">http://localhost:5000</span>.
+            Backend:{" "}
+            <span className="mono">{api?.defaults?.baseURL || "unknown"}</span>.
+          </p>
+          <p className="state__hint">
+            If this still says <span className="mono">http://localhost:5000</span>, restart the
+            frontend after setting <span className="mono">VITE_API_BASE_URL</span>.
           </p>
         </section>
       ) : memories.length === 0 ? (
