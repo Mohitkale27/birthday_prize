@@ -10,6 +10,18 @@ import Surprise from "./pages/Surprise";
 import Final from "./pages/Final";
 import Timeline from "./pages/Timeline";
 
+function isUnlocked() {
+  try {
+    return window.localStorage.getItem("birthday_unlocked") === "1";
+  } catch {
+    return false;
+  }
+}
+
+function RequireUnlock({ children }) {
+  return isUnlocked() ? children : <Navigate to="/surprise" replace />;
+}
+
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -28,11 +40,11 @@ export default function App() {
       <BackgroundMusic />
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/timeline" element={<Timeline />} />
-        <Route path="/letter" element={<Letter />} />
-        <Route path="/gallery" element={<Gallery />} />
+        <Route path="/timeline" element={<RequireUnlock><Timeline /></RequireUnlock>} />
+        <Route path="/letter" element={<RequireUnlock><Letter /></RequireUnlock>} />
+        <Route path="/gallery" element={<RequireUnlock><Gallery /></RequireUnlock>} />
         <Route path="/surprise" element={<Surprise />} />
-        <Route path="/final" element={<Final />} />
+        <Route path="/final" element={<RequireUnlock><Final /></RequireUnlock>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>

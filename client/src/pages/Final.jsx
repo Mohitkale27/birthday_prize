@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 // Edit these anytime 💖
 const GIRLFRIEND_NAME = "Laddoo";
 const FINAL_MESSAGE =
-  "You are my favorite person, my safest place, and my happiest thought. I love you — always.";
+  "You are the best person in the world, Majhi Favourite. Nehmi happy raha, pillu. I’m always with you. Love you, Motu.";
 
 function rand(min, max) {
   return Math.random() * (max - min) + min;

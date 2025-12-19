@@ -108,7 +108,7 @@ export default function Landing() {
         <button
           type="button"
           className="landing__button"
-          onClick={() => navigate("/timeline")}
+          onClick={() => navigate("/surprise")}
         >
           Start the Surprise 🎁
         </button>

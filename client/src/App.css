@@ -202,6 +202,27 @@
   white-space: nowrap;
 }
 
+@media (max-width: 420px) {
+  .timeline-nav {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "prev next"
+      "meta meta";
+  }
+
+  .timeline-nav__button:first-child {
+    grid-area: prev;
+  }
+
+  .timeline-nav__button:last-child {
+    grid-area: next;
+  }
+
+  .timeline-nav__meta {
+    grid-area: meta;
+  }
+}
+
 @media (min-width: 640px) {
   .page {
     padding: 36px 22px 80px;
@@ -352,6 +373,7 @@
   margin: 0 0 12px;
   text-align: center;
   font-size: 1.7rem;
+  font-family: "Cinzel Decorative", "Poppins", "Noto Serif Devanagari", serif;
 }
 
 .letter__body {
@@ -361,17 +383,22 @@
   border-radius: 18px;
   border: 1px solid rgba(210, 140, 165, 0.18);
   background: rgba(255, 255, 255, 0.55);
+  max-height: 70vh;
+  overflow: auto;
 }
 
 .letter__line {
   margin: 0;
   padding: 2px 0;
-  text-align: center;
+  text-align: left;
   color: rgba(42, 28, 34, 0.92);
-  font-size: 1.12rem;
+  font-size: 1.05rem;
   line-height: 1.65;
   letter-spacing: 0.01em;
-  font-family: "Segoe Script", "Bradley Hand", "Comic Sans MS", cursive;
+  /* Harry-Potter-ish vibe (free Google font) + Devanagari fallback for Marathi */
+  font-family: "IM Fell English", "Noto Serif Devanagari", serif;
+  font-style: italic;
+  animation: letter-line-in 220ms ease both;
 }
 
 .letter__cursor {
@@ -382,6 +409,29 @@
   border-radius: 3px;
   background: rgba(211, 91, 134, 0.55);
   vertical-align: middle;
+  animation: letter-cursor-blink 1s step-end infinite;
+}
+
+@keyframes letter-line-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes letter-cursor-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
 }
 
 .letter__next {
@@ -411,7 +461,7 @@
   }
 
   .letter__line {
-    font-size: 1.18rem;
+    font-size: 1.14rem;
   }
 }
 
@@ -428,11 +478,8 @@
   border: 0;
   padding: 0;
   background: transparent;
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(42, 28, 34, 0.10);
-  border: 1px solid rgba(210, 140, 165, 0.22);
   cursor: pointer;
+  transition: transform 160ms ease;
 }
 
 .gallery__tile:focus-visible {
@@ -440,11 +487,36 @@
   outline-offset: 2px;
 }
 
+.gallery__tile:hover {
+  transform: translateY(-2px);
+}
+
+.gallery__tile--wide {
+  grid-column: 1 / -1; /* bigger landscape moments */
+}
+
+.gallery__frame {
+  border-radius: 18px;
+  border: 1px solid rgba(210, 140, 165, 0.22);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 14px 40px rgba(42, 28, 34, 0.12);
+  padding: 10px;
+}
+
 .gallery__img {
   display: block;
   width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
+  height: auto;
+  border-radius: 14px;
+  background: rgba(255, 250, 252, 1);
+}
+
+.gallery__caption {
+  margin: 10px 2px 0;
+  text-align: center;
+  font-family: "IM Fell English", "Noto Serif Devanagari", serif;
+  font-style: italic;
+  color: rgba(42, 28, 34, 0.86);
 }
 
 .gallery__footer {
@@ -471,6 +543,10 @@
   .gallery {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 14px;
+  }
+
+  .gallery__tile--wide {
+    grid-column: span 2;
   }
 }
 
@@ -502,10 +578,20 @@
   position: relative;
 }
 
-.modal__close {
+.modal__top {
   position: absolute;
   top: 10px;
+  left: 10px;
   right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.modal__close {
+  position: relative;
   width: 40px;
   height: 40px;
   border-radius: 12px;
@@ -515,6 +601,35 @@
   font-size: 24px;
   line-height: 1;
   cursor: pointer;
+  pointer-events: auto;
+}
+
+.modal__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(210, 140, 165, 0.35);
+  background: rgba(255, 255, 255, 0.75);
+  color: rgba(42, 28, 34, 0.95);
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modal__nav--prev {
+  left: 10px;
+}
+
+.modal__nav--next {
+  right: 10px;
+}
+
+.modal__nav:focus-visible {
+  outline: 4px solid rgba(211, 91, 134, 0.18);
+  outline-offset: 2px;
 }
 
 .modal__img {
@@ -642,6 +757,35 @@
 .surprise__input:focus {
   border-color: rgba(211, 91, 134, 0.55);
   box-shadow: 0 0 0 4px rgba(211, 91, 134, 0.16);
+}
+
+.surprise__words {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.surprise__wordInput {
+  width: 100%;
+  border-radius: 16px;
+  padding: 12px 12px;
+  border: 1px solid rgba(210, 140, 165, 0.28);
+  background: rgba(255, 255, 255, 0.72);
+  color: rgba(42, 28, 34, 0.95);
+  outline: none;
+  text-align: center;
+  font-weight: 800;
+}
+
+.surprise__wordInput:focus {
+  border-color: rgba(211, 91, 134, 0.55);
+  box-shadow: 0 0 0 4px rgba(211, 91, 134, 0.16);
+}
+
+@media (max-width: 420px) {
+  .surprise__words {
+    grid-template-columns: 1fr;
+  }
 }
 
 .surprise__submit,
@@ -839,6 +983,21 @@
   color: rgba(42, 28, 34, 0.95);
   cursor: pointer;
   transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+@media (max-width: 640px) {
+  /* Keep the control away from bottom CTAs on mobile */
+  .bg-music {
+    top: 12px;
+    bottom: auto;
+    right: 12px;
+  }
+
+  .bg-music__error {
+    top: 66px;
+    bottom: auto;
+    right: 12px;
+  }
 }
 
 .bg-music:hover {
